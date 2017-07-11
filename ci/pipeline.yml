@@ -1,0 +1,38 @@
+---
+resources:
+  - name: openfortivpn-configure
+    type: git
+    source:
+      uri: https://github.com/kurtmc/openfortivpn-configure.git
+
+jobs:
+  - name: build
+    serial: true
+    plan:
+      - get: openfortivpn-configure
+        trigger: true
+      - task: build-and-test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: golang:1.8-wheezy
+          inputs:
+            - name: openfortivpn-configure
+          outputs:
+            - name: bin
+          run:
+            path: bash
+            args:
+              - -c
+              - |
+                mkdir -p /go/src/github.com/kurtmc/
+                cp -r openfortivpn-configure /go/src/github.com/kurtmc/
+                pushd /go/src/github.com/kurtmc/openfortivpn-configure
+                go get -u ./...
+                go build
+                go test
+                pushd
+                cp /go/src/github.com/kurtmc/openfortivpn-configure/openfortivpn-configure bin/
+
