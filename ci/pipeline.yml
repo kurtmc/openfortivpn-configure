@@ -17,7 +17,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: golang:1.8-wheezy
+              repository: golang
+              tag: 1.8-wheezy
           inputs:
             - name: openfortivpn-configure
           outputs:
